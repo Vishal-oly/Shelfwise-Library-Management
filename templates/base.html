@@ -1,0 +1,32 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Shelfwise Library{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+{% if user.is_authenticated %}
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="{% url 'dashboard' %}"><span class="brand-mark">S</span><span>Shelfwise<small>LIBRARY DESK</small></span></a>
+    <div class="nav-label">WORKSPACE</div>
+    <nav class="side-nav">
+      <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><span class="nav-icon">▦</span> Overview</a>
+      <a href="{% url 'book_list' %}" class="{% if 'book' in request.resolver_match.url_name %}active{% endif %}"><span class="nav-icon">▤</span> Book catalogue</a>
+      <a href="{% url 'issue_list' %}" class="{% if 'issue' in request.resolver_match.url_name %}active{% endif %}"><span class="nav-icon">⇄</span> Borrow & return</a>
+    </nav>
+    <div class="sidebar-bottom"><div class="side-help"><div class="help-mark">✦</div><b>Small library, simply managed.</b><p>Keep your collection organised and your readers moving.</p></div>
+      <div class="profile"><div class="avatar">{{ user.first_name|default:user.username|slice:":1"|upper }}</div><div class="profile-info"><b>{{ user.first_name|default:user.username }}</b><small>Library staff</small></div><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="icon-button" title="Log out" aria-label="Log out">↗</button></form></div>
+    </div>
+  </aside>
+  <main class="main-area"><header class="topbar"><div><span class="eyebrow">YOUR LIBRARY, AT A GLANCE</span><div class="topbar-title">Shelfwise <span class="topbar-dot">/</span> <span>{% block section %}Overview{% endblock %}</span></div></div><div class="top-actions"><span class="today-pill">● &nbsp; Library desk</span></div></header>
+    {% if messages %}<div class="messages">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}<button onclick="this.parentElement.remove()">×</button></div>{% endfor %}</div>{% endif %}
+    <section class="page-content">{% block content %}{% endblock %}</section>
+    <footer class="footer">Shelfwise <span>·</span> A calm space for your collection</footer>
+  </main>
+</div>
+{% else %}{% block public_content %}{% endblock %}{% endif %}
+</body></html>
